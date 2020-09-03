@@ -56,23 +56,6 @@ class BottomNavBar extends StatelessWidget {
           ),
           BottomNavigationBarItem(
             icon: BottomNavBarItemIcon(
-              index: 1,
-              selectedIndex: index,
-              icon: Icon(
-                FontAwesomeIcons.search,
-                color: index == 0 ? Colors.white : Colors.black,
-                size: 25.0,
-              ),
-              selectedIcon: Icon(
-                FontAwesomeIcons.search,
-                color: index == 0 ? Colors.white : Colors.black,
-                size: 28.0,
-              ),
-            ),
-            title: Text(''),
-          ),
-          BottomNavigationBarItem(
-            icon: BottomNavBarItemIcon(
               index: 2,
               selectedIndex: index,
               icon: SizedBox(
@@ -96,23 +79,6 @@ class BottomNavBar extends StatelessWidget {
                   child: Image.asset('assets/icons/create_dark.png'),
                 ),
                 height: 28.0,
-              ),
-            ),
-            title: Text(''),
-          ),
-          BottomNavigationBarItem(
-            icon: BottomNavBarItemIcon(
-              index: 3,
-              selectedIndex: index,
-              icon: Icon(
-                FontAwesomeIcons.commentAlt,
-                color: index == 0 ? Colors.white : Colors.black,
-                size: 25.0,
-              ),
-              selectedIcon: Icon(
-                FontAwesomeIcons.solidCommentAlt,
-                color: index == 0 ? Colors.white : Colors.black,
-                size: 28.0,
               ),
             ),
             title: Text(''),

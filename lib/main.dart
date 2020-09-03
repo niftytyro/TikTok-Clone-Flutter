@@ -10,8 +10,14 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays(
-        [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+    SystemChrome.setEnabledSystemUIOverlays([]);
+    // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    // SystemChrome.setSystemUIOverlayStyle(
+    //   SystemUiOverlayStyle(
+    //     statusBarColor: Colors.transparent,
+    //     systemNavigationBarColor: Colors.transparent,
+    //   ),
+    // );
     return MaterialApp(
       title: 'TokTok',
       theme: ThemeData(
@@ -23,13 +29,28 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  int _index = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavBar(),
+      backgroundColor: _index == 0 ? Colors.black : Colors.white,
+      bottomNavigationBar: BottomNavBar(
+        index: _index,
+        setIndex: (int newIndex) {
+          setState(() {
+            _index = newIndex;
+          });
+        },
+      ),
       body: HomePage(),
     );
   }

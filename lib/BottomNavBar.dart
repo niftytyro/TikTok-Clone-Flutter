@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BottomNavBarItemIcon extends StatelessWidget {
   const BottomNavBarItemIcon({
@@ -20,25 +21,17 @@ class BottomNavBarItemIcon extends StatelessWidget {
   }
 }
 
-class BottomNavBar extends StatefulWidget {
-  @override
-  _BottomNavBarState createState() => _BottomNavBarState();
-}
+class BottomNavBar extends StatelessWidget {
+  final int index;
+  final Function setIndex;
 
-class _BottomNavBarState extends State<BottomNavBar> {
-  int _index = 0;
-
-  void _setIndex(index) {
-    setState(() {
-      _index = index;
-    });
-  }
+  BottomNavBar({@required this.index, @required this.setIndex});
 
   @override
   Widget build(BuildContext context) {
     return Theme(
       data: Theme.of(context).copyWith(
-        canvasColor: _index == 0 ? Colors.black : Colors.white,
+        canvasColor: index == 0 ? Colors.black : Colors.white,
       ),
       child: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -47,26 +40,16 @@ class _BottomNavBarState extends State<BottomNavBar> {
           BottomNavigationBarItem(
             icon: BottomNavBarItemIcon(
               index: 0,
-              selectedIndex: _index,
+              selectedIndex: index,
               icon: Icon(
-                Icons.home,
+                Icons.home_outlined,
                 color: Colors.black,
-                size: 25.0,
+                size: 35.0,
               ),
-              selectedIcon: Column(
-                children: [
-                  Icon(
-                    Icons.home,
-                    color: Colors.white,
-                    size: 25.0,
-                  ),
-                  SizedBox(height: 5.0),
-                  Container(
-                    width: 25.0,
-                    height: 2.0,
-                    color: _index == 0 ? Colors.white : Colors.black,
-                  ),
-                ],
+              selectedIcon: Icon(
+                Icons.home,
+                color: Colors.white,
+                size: 35.0,
               ),
             ),
             title: Text(''),
@@ -74,15 +57,15 @@ class _BottomNavBarState extends State<BottomNavBar> {
           BottomNavigationBarItem(
             icon: BottomNavBarItemIcon(
               index: 1,
-              selectedIndex: _index,
+              selectedIndex: index,
               icon: Icon(
-                Icons.search_rounded,
-                color: _index == 0 ? Colors.white : Colors.black,
+                FontAwesomeIcons.search,
+                color: index == 0 ? Colors.white : Colors.black,
                 size: 25.0,
               ),
               selectedIcon: Icon(
-                Icons.search,
-                color: _index == 0 ? Colors.white : Colors.black,
+                FontAwesomeIcons.search,
+                color: index == 0 ? Colors.white : Colors.black,
                 size: 28.0,
               ),
             ),
@@ -91,15 +74,21 @@ class _BottomNavBarState extends State<BottomNavBar> {
           BottomNavigationBarItem(
             icon: BottomNavBarItemIcon(
               index: 2,
-              selectedIndex: _index,
+              selectedIndex: index,
               icon: SizedBox(
                 child: FittedBox(
                   fit: BoxFit.fitHeight,
-                  child: _index == 0
-                      ? Image.asset('assets/icons/create_light.png')
-                      : Image.asset('assets/icons/create_dark.png'),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: 25.0,
+                      minWidth: 25.0,
+                    ),
+                    child: index == 0
+                        ? Image.asset('assets/icons/create_light.png')
+                        : Image.asset('assets/icons/create_dark.png'),
+                  ),
                 ),
-                height: 25.0,
+                height: 28.0,
               ),
               selectedIcon: SizedBox(
                 child: FittedBox(
@@ -114,15 +103,15 @@ class _BottomNavBarState extends State<BottomNavBar> {
           BottomNavigationBarItem(
             icon: BottomNavBarItemIcon(
               index: 3,
-              selectedIndex: _index,
+              selectedIndex: index,
               icon: Icon(
-                Icons.message_outlined,
-                color: _index == 0 ? Colors.white : Colors.black,
+                FontAwesomeIcons.commentAlt,
+                color: index == 0 ? Colors.white : Colors.black,
                 size: 25.0,
               ),
               selectedIcon: Icon(
-                Icons.message,
-                color: _index == 0 ? Colors.white : Colors.black,
+                FontAwesomeIcons.solidCommentAlt,
+                color: index == 0 ? Colors.white : Colors.black,
                 size: 28.0,
               ),
             ),
@@ -131,15 +120,15 @@ class _BottomNavBarState extends State<BottomNavBar> {
           BottomNavigationBarItem(
             icon: BottomNavBarItemIcon(
               index: 4,
-              selectedIndex: _index,
+              selectedIndex: index,
               icon: Icon(
-                Icons.person_outline,
-                color: _index == 0 ? Colors.white : Colors.black,
+                FontAwesomeIcons.user,
+                color: index == 0 ? Colors.white : Colors.black,
                 size: 25.0,
               ),
               selectedIcon: Icon(
-                Icons.person,
-                color: _index == 0 ? Colors.white : Colors.black,
+                FontAwesomeIcons.userAlt,
+                color: index == 0 ? Colors.white : Colors.black,
                 size: 28.0,
               ),
             ),
@@ -149,7 +138,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         currentIndex: 0,
         showSelectedLabels: false,
         showUnselectedLabels: false,
-        onTap: _setIndex,
+        onTap: setIndex,
       ),
     );
   }

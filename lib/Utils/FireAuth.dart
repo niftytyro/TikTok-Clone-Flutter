@@ -17,4 +17,14 @@ class FireAuth {
 
     return user;
   }
+
+  User get getCurrentUser {
+    return _auth.currentUser;
+  }
+
+  bool get isSignedIn {
+    return _auth.currentUser == null ? false : true;
+  }
 }
+
+final auth = FireAuth();

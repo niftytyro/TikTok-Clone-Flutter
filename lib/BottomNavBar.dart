@@ -56,7 +56,7 @@ class BottomNavBar extends StatelessWidget {
           ),
           BottomNavigationBarItem(
             icon: BottomNavBarItemIcon(
-              index: 2,
+              index: 1,
               selectedIndex: index,
               icon: SizedBox(
                 child: FittedBox(
@@ -71,21 +71,21 @@ class BottomNavBar extends StatelessWidget {
                         : Image.asset('assets/icons/create_dark.png'),
                   ),
                 ),
-                height: 28.0,
+                height: 35.0,
               ),
               selectedIcon: SizedBox(
                 child: FittedBox(
                   fit: BoxFit.fitHeight,
                   child: Image.asset('assets/icons/create_dark.png'),
                 ),
-                height: 28.0,
+                height: 35.0,
               ),
             ),
             title: Text(''),
           ),
           BottomNavigationBarItem(
             icon: BottomNavBarItemIcon(
-              index: 4,
+              index: 2,
               selectedIndex: index,
               icon: Icon(
                 FontAwesomeIcons.user,

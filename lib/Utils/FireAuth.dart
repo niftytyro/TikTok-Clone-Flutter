@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:tiktok_clone/Utils/FireDB.dart';
 
 class FireAuth {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -14,7 +15,7 @@ class FireAuth {
         idToken: _googleAuth.idToken, accessToken: _googleAuth.accessToken);
 
     final User user = (await _auth.signInWithCredential(_credentials)).user;
-
+    fireDB.addUser(username: user.displayName, email: user.email);
     return user;
   }
 

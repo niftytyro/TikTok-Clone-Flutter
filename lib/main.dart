@@ -79,6 +79,9 @@ class _HomeState extends State<Home> {
               _index = newIndex;
             });
             if (_index == 1) {
+              setState(() {
+                _index = 0;
+              });
               Navigator.pushNamed(context, Create.pathName);
             } else if (_index == 2 && !auth.isSignedIn) {
               showModalBottomSheet(

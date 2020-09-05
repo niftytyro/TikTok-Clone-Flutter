@@ -19,6 +19,11 @@ class FireAuth {
     return user;
   }
 
+  void signOut() async {
+    await _googleSignIn.signOut();
+    await _auth.signOut();
+  }
+
   User get getCurrentUser {
     return _auth.currentUser;
   }

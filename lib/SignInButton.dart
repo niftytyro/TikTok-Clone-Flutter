@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tiktok_clone/Utils/FireAuth.dart';
 
 class SignInButton extends StatelessWidget {
   const SignInButton({Key key, @required this.constraints}) : super(key: key);
@@ -11,7 +12,10 @@ class SignInButton extends StatelessWidget {
         padding: EdgeInsets.only(left: 0.05 * constraints.maxWidth),
         height: 0.1 * constraints.maxHeight,
         color: Colors.pink[400],
-        onPressed: () {},
+        onPressed: () {
+          auth.signIn();
+          Navigator.pop(context);
+        },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.min,

@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,22 +7,32 @@ import 'package:tiktok_clone/SignInButton.dart';
 import 'package:tiktok_clone/screens/Create.dart';
 import 'package:tiktok_clone/screens/HomePage.dart';
 import 'package:tiktok_clone/screens/Profile.dart';
+import 'package:tiktok_clone/Utils/FireAuth.dart';
 
-void main() {
-  runApp(MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final cameras = await availableCameras();
+
+  runApp(MyApp(
+    cameras: cameras,
+  ));
 }
 
 class MyApp extends StatelessWidget {
+  final List<CameraDescription> cameras;
+
+  MyApp({@required this.cameras});
+
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays([]);
-    // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    // SystemChrome.setSystemUIOverlayStyle(
-    //   SystemUiOverlayStyle(
-    //     statusBarColor: Colors.transparent,
-    //     systemNavigationBarColor: Colors.transparent,
-    //   ),
-    // );
+    // SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        // systemNavigationBarColor: Colors.transparent,
+      ),
+    );
     return FutureBuilder(
       future: Firebase.initializeApp(),
       builder: (context, snapshot) {
@@ -31,7 +42,13 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.blue,
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
-          home: Home(),
+          routes: {
+            Home.pathName: (context) => Home(),
+            Create.pathName: (context) => Create(
+                  cameras: cameras,
+                ),
+          },
+          initialRoute: Home.pathName,
         );
       },
     );
@@ -39,6 +56,8 @@ class MyApp extends StatelessWidget {
 }
 
 class Home extends StatefulWidget {
+  static const pathName = '/home';
+
   Home({Key key}) : super(key: key);
 
   @override
@@ -59,7 +78,9 @@ class _HomeState extends State<Home> {
             setState(() {
               _index = newIndex;
             });
-            if (_index > 0) {
+            if (_index == 1) {
+              Navigator.pushNamed(context, Create.pathName);
+            } else if (_index == 2 && !auth.isSignedIn) {
               showModalBottomSheet(
                 context: context,
                 builder: (context) {
@@ -104,7 +125,7 @@ class _HomeState extends State<Home> {
           }
         },
       ),
-      body: _index == 0 ? HomePage() : _index == 1 ? Create() : Profile(),
+      body: _index == 0 ? HomePage() : Profile(),
     );
   }
 }

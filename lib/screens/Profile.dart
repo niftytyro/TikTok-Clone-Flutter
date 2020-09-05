@@ -4,7 +4,7 @@ import 'package:tiktok_clone/Utils/FireAuth.dart';
 class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SafeArea(
       child: FlatButton(
         child: Text('Signout'),
         onPressed: () {

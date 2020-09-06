@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tiktok_clone/BottomNavBar.dart';
 import 'package:tiktok_clone/SignInButton.dart';
-import 'package:tiktok_clone/screens/Create.dart';
-import 'package:tiktok_clone/screens/HomePage.dart';
-import 'package:tiktok_clone/screens/Profile.dart';
+import 'package:tiktok_clone/screens/Create/Create.dart';
+import 'package:tiktok_clone/screens/Home/HomePage.dart';
+import 'package:tiktok_clone/screens/Home/Profile.dart';
 import 'package:tiktok_clone/Utils/FireAuth.dart';
 
 Future<void> main() async {

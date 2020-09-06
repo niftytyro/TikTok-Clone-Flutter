@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tiktok_clone/screens/Overlay.dart';
+import 'package:tiktok_clone/screens/Home/Overlay.dart';
 
 class HomePage extends StatefulWidget {
   @override

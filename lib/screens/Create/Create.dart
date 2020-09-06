@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:tiktok_clone/screens/Create/CreateOverlay.dart';
 
 class Create extends StatefulWidget {
@@ -24,6 +25,11 @@ class _CreateState extends State<Create> {
 
   @override
   void initState() {
+    Permission.storage.status.then((status) {
+      if (!status.isGranted) {
+        Permission.storage.request();
+      }
+    });
     super.initState();
     _initCamera(widget.cameras.last);
     _imagePicker = ImagePicker();
@@ -64,14 +70,21 @@ class _CreateState extends State<Create> {
     if (!_controller.value.isInitialized) {
       return null;
     }
-    final String dirPath = '/storage/emulated/0/TokTok';
-    await Directory(dirPath).create(recursive: true);
-    final String filePath = '$dirPath/${DateTime.now().toString()}.mp4';
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
+    if (status.isGranted) {
+      final extDir = await getExternalStorageDirectory();
+      final String dirPath = '${extDir.path}/../../../../TokTok';
+      await Directory(dirPath).create(recursive: true);
+      final String filePath = '$dirPath/${DateTime.now().toString()}.mp4';
 
-    try {
-      await _controller.startVideoRecording(filePath);
-    } catch (e) {
-      print(e);
+      try {
+        await _controller.startVideoRecording(filePath);
+      } catch (e) {
+        print(e);
+      }
     }
   }
 

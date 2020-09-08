@@ -5,12 +5,18 @@ class CreateOverlay extends StatefulWidget {
   final Function pickFromGallery;
   final Function startRecording;
   final Function stopRecording;
+  final Function clearRecording;
+  final Function saveRecording;
+  final bool isRecorded;
 
   const CreateOverlay({
     this.toggleCamera,
     this.pickFromGallery,
     this.startRecording,
     this.stopRecording,
+    this.clearRecording,
+    this.saveRecording,
+    this.isRecorded,
   });
 
   @override
@@ -48,7 +54,14 @@ class _CreateOverlayState extends State<CreateOverlay> {
             });
             widget.stopRecording();
           },
+          clearRecorded: () {
+            widget.clearRecording();
+          },
+          saveRecorded: () {
+            widget.saveRecording();
+          },
           isRecording: _isRecording,
+          isRecorded: widget.isRecorded,
         ),
       ],
     );
@@ -151,13 +164,19 @@ class OverlayBottom extends StatefulWidget {
     this.pickFromGallery,
     this.startRecording,
     this.stopRecording,
+    this.clearRecorded,
+    this.saveRecorded,
     this.isRecording,
+    this.isRecorded,
   }) : super(key: key);
 
   final Function pickFromGallery;
   final Function startRecording;
   final Function stopRecording;
+  final Function clearRecorded;
+  final Function saveRecorded;
   final bool isRecording;
+  final bool isRecorded;
 
   @override
   _OverlayBottomState createState() => _OverlayBottomState();
@@ -172,6 +191,29 @@ class _OverlayBottomState extends State<OverlayBottom> {
         Expanded(
           child: Stack(
             children: [
+              if (widget.isRecorded)
+                Positioned.fill(
+                  left: 20.0,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                      onTap: widget.clearRecorded,
+                      child: Container(
+                        height: 40.0,
+                        width: 40.0,
+                        padding: EdgeInsets.all(2.0),
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(2.0),
+                        ),
+                        child: FittedBox(
+                          fit: BoxFit.fill,
+                          child: Icon(Icons.backspace, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               Center(
                 child: Listener(
                   onPointerDown: widget.startRecording,
@@ -211,7 +253,9 @@ class _OverlayBottomState extends State<OverlayBottom> {
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
-                    onTap: widget.pickFromGallery,
+                    onTap: widget.isRecorded
+                        ? widget.saveRecorded
+                        : widget.pickFromGallery,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -220,22 +264,31 @@ class _OverlayBottomState extends State<OverlayBottom> {
                           width: 40.0,
                           padding: EdgeInsets.all(2.0),
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(2.0),
+                            color: widget.isRecorded
+                                ? Color(0xFFBD3546)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(
+                                widget.isRecorded ? 50.0 : 2.0),
                           ),
                           child: FittedBox(
                             fit: BoxFit.fill,
-                            child: Image.asset('assets/icons/gallery_icon.png'),
+                            child: widget.isRecorded
+                                ? Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                  )
+                                : Image.asset('assets/icons/gallery_icon.png'),
                           ),
                         ),
-                        Text(
-                          'Upload',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 8.0,
-                            fontWeight: FontWeight.w700,
+                        if (!widget.isRecorded)
+                          Text(
+                            'Upload',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 8.0,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),

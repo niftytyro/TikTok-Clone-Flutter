@@ -21,20 +21,21 @@ class Create extends StatefulWidget {
 class _CreateState extends State<Create> {
   CameraController _controller;
   Future<void> _initializedControllerFuture;
-
   ImagePicker _imagePicker;
   File _tempVideoFile;
+  String _tempVideoPath;
   bool _isRecorded = false;
 
   @override
   void initState() {
+    super.initState();
     Permission.storage.status.then((status) {
       if (!status.isGranted) {
         Permission.storage.request();
       }
     });
-    super.initState();
-    _initCamera(widget.cameras.last);
+    _initCamera(widget.cameras.firstWhere((description) =>
+        description.lensDirection == CameraLensDirection.front));
     _imagePicker = ImagePicker();
   }
 
@@ -78,6 +79,9 @@ class _CreateState extends State<Create> {
     setState(() {
       _isRecorded = false;
     });
+    if (_isRecorded) {
+      _clearRecordedVideo();
+    }
     if (!_controller.value.isInitialized) {
       return null;
     }
@@ -89,10 +93,10 @@ class _CreateState extends State<Create> {
       final extDir = await getApplicationDocumentsDirectory();
       final String dirPath = '${extDir.path}';
       await Directory(dirPath).create(recursive: true);
-      String tempVideoPath = '$dirPath/${DateTime.now().toString()}.mp4';
-      _tempVideoFile = File(tempVideoPath);
+      _tempVideoPath = '$dirPath/${DateTime.now().toString()}.mp4';
+
       try {
-        await _controller.startVideoRecording(tempVideoPath);
+        await _controller.startVideoRecording(_tempVideoPath);
       } catch (e) {
         print(e);
       }
@@ -106,8 +110,10 @@ class _CreateState extends State<Create> {
     setState(() {
       _isRecorded = true;
     });
+
     try {
       await _controller.stopVideoRecording();
+      _tempVideoFile = File(_tempVideoPath);
     } catch (e) {
       print(e);
     }
@@ -161,6 +167,7 @@ class _CreateState extends State<Create> {
                     clearRecording: _clearRecordedVideo,
                     saveRecording: _saveRecordedVideo,
                     isRecorded: _isRecorded,
+                    videoFile: _tempVideoFile,
                   ),
                 ),
               ],

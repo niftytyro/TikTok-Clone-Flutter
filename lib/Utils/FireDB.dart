@@ -10,10 +10,14 @@ class FireDB {
         .get();
     if (snapshot.size == 0) {
       _firestore.collection('users').add({
-        username: username,
-        email: email,
+        'username': username,
+        'email': email,
       });
     }
+  }
+
+  Stream<QuerySnapshot> getSoundsStream() {
+    return _firestore.collection('sounds').snapshots();
   }
 }
 

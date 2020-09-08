@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:tiktok_clone/screens/AddSounds/AddSounds.dart';
 
 class CreateOverlay extends StatefulWidget {
   final Function toggleCamera;
@@ -8,6 +11,7 @@ class CreateOverlay extends StatefulWidget {
   final Function clearRecording;
   final Function saveRecording;
   final bool isRecorded;
+  final File videoFile;
 
   const CreateOverlay({
     this.toggleCamera,
@@ -17,6 +21,7 @@ class CreateOverlay extends StatefulWidget {
     this.clearRecording,
     this.saveRecording,
     this.isRecorded,
+    this.videoFile,
   });
 
   @override
@@ -33,7 +38,10 @@ class _CreateOverlayState extends State<CreateOverlay> {
       children: [
         _isRecording
             ? VideoLengthBar()
-            : OverlayTop(toggleCamera: widget.toggleCamera),
+            : OverlayTop(
+                toggleCamera: widget.toggleCamera,
+                videoFile: widget.videoFile,
+              ),
         OverlayBottom(
           pickFromGallery: widget.pickFromGallery,
           startRecording: (PointerDownEvent downEvent) {
@@ -113,9 +121,11 @@ class OverlayTop extends StatelessWidget {
   const OverlayTop({
     Key key,
     @required this.toggleCamera,
+    this.videoFile,
   }) : super(key: key);
 
   final Function toggleCamera;
+  final File videoFile;
 
   @override
   Widget build(BuildContext context) {
@@ -132,18 +142,24 @@ class OverlayTop extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        Row(
-          children: [
-            Icon(
-              Icons.music_note_outlined,
-              color: Colors.white,
-              size: 30.0,
-            ),
-            Text(
-              'Add a sound',
-              style: TextStyle(color: Colors.white, fontSize: 13.0),
-            ),
-          ],
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => AddSounds()));
+          },
+          child: Row(
+            children: [
+              Icon(
+                Icons.music_note_outlined,
+                color: Colors.white,
+                size: 30.0,
+              ),
+              Text(
+                'Add a sound',
+                style: TextStyle(color: Colors.white, fontSize: 13.0),
+              ),
+            ],
+          ),
         ),
         IconButton(
           icon: Icon(

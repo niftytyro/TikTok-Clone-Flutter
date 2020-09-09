@@ -1,4 +1,7 @@
+import 'package:audioplayers/audioplayers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tiktok_clone/Utils/FireDB.dart';
 import 'package:tiktok_clone/Utils/FireStorage.dart';
 
 class AddSounds extends StatefulWidget {
@@ -7,8 +10,32 @@ class AddSounds extends StatefulWidget {
 }
 
 class _AddSoundsState extends State<AddSounds> {
+  AudioPlayer _player;
+
+  @override
+  void initState() {
+    super.initState();
+    _player = AudioPlayer();
+  }
+
+  Future<void> _playSound(Future<String> url) async {
+    _player.stop();
+    _player.play(await url);
+  }
+
+  void _stopSound() {
+    _player.stop();
+  }
+
   void _popScreen() {
+    _stopSound();
     Navigator.pop(context);
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
   }
 
   @override
@@ -22,7 +49,8 @@ class _AddSoundsState extends State<AddSounds> {
               TopRow(
                 popScreen: _popScreen,
               ),
-              SoundsList(urlFuture: fireStorage.getSoundUrls()),
+              SizedBox(height: 20.0),
+              SoundsList(playSound: _playSound, stopSound: _stopSound),
             ],
           ),
         ),
@@ -77,31 +105,113 @@ class TopRow extends StatelessWidget {
   }
 }
 
-class SoundsList extends StatelessWidget {
+class SoundsList extends StatefulWidget {
   const SoundsList({
     Key key,
-    this.urlFuture,
+    this.playSound,
+    this.stopSound,
   }) : super(key: key);
 
-  final Future<List> urlFuture;
+  final Function playSound;
+  final Function stopSound;
+
+  @override
+  _SoundsListState createState() => _SoundsListState();
+}
+
+class _SoundsListState extends State<SoundsList> {
+  List sounds = [];
+  int playing = -1;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Column(
+    return Expanded(
+      child: StreamBuilder<QuerySnapshot>(
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            sounds = snapshot.data.docs;
+            return ListView(
+              children: sounds.asMap().entries.map((entry) {
+                var doc = entry.value;
+                int index = entry.key;
+                return SoundTile(
+                    name: doc.data()['name'],
+                    creator: doc.data()['creator'],
+                    isPlaying: playing == index,
+                    onTap: () {
+                      if (playing == index) {
+                        widget.stopSound();
+                      } else {
+                        widget.playSound(fireStorage.getSoundUrl(
+                            path: "sounds/${doc.data()['name']}"));
+                      }
+                      setState(() {
+                        if (playing == index) {
+                          playing = -1;
+                        } else {
+                          playing = index;
+                        }
+                      });
+                    });
+              }).toList(),
+            );
+          }
+        },
+        stream: fireDB.getSoundsStream(),
+      ),
+    );
+  }
+}
+
+class SoundTile extends StatelessWidget {
+  const SoundTile({
+    Key key,
+    @required this.name,
+    @required this.creator,
+    @required this.isPlaying,
+    @required this.onTap,
+  }) : super(key: key);
+
+  final String name;
+  final String creator;
+  final bool isPlaying;
+  final Function onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        children: [
+          GestureDetector(
+            child: Icon(
+              isPlaying ? Icons.pause : Icons.play_arrow_rounded,
+              size: 30.0,
+            ),
+            onTap: onTap,
+          ),
+          SizedBox(width: 10.0),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('asdasd'),
+              Text(
+                name,
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.0),
+              ),
+              SizedBox(height: 5.0),
+              Text(
+                creator,
+                style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12.0,
+                    color: Colors.grey),
+              ),
             ],
-          );
-        } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-      future: urlFuture,
+          ),
+        ],
+      ),
     );
   }
 }

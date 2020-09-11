@@ -75,14 +75,15 @@ class _PostState extends State<Post> {
                 child: FlatButton(
                   height: 50.0,
                   onPressed: () async {
-                    String path = await fireStorage.uploadFile(
+                    List path_timestamp = await fireStorage.uploadFile(
                         widget.file, auth.getDocID);
                     print(_textEditingController.value.text);
 
                     fireDB.addPost(
                       creator: auth.getDocID,
-                      path: path,
+                      path: path_timestamp.first,
                       description: _textEditingController.value.text,
+                      timestamp: path_timestamp.last,
                     );
                     Navigator.pop(context);
                   },

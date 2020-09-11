@@ -22,18 +22,29 @@ class FireDB {
   }
 
   Future<void> addPost(
-      {String creator, String path, String description}) async {
+      {String creator,
+      String path,
+      String description,
+      DateTime timestamp}) async {
     DocumentReference _docRef = await _firestore.collection('uploads').add({
       'creator': creator,
       'path': path,
       'description': description,
       'likes': 0,
+      'timestamp': timestamp,
     });
     _docRef.collection('comments');
   }
 
   Stream<QuerySnapshot> getSoundsStream() {
     return _firestore.collection('sounds').snapshots();
+  }
+
+  Stream<QuerySnapshot> getUploadsStream() {
+    return _firestore
+        .collection('uploads')
+        .orderBy('timestamp', descending: true)
+        .snapshots();
   }
 }
 

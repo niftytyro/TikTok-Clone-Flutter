@@ -14,10 +14,11 @@ class FireStorage {
     return await _ref.child(path).getDownloadURL();
   }
 
-  Future<String> uploadFile(File file, String id) async {
-    String filePath = 'uploads/${id}_${DateTime.now().toUtc()}.mp4';
+  Future<List> uploadFile(File file, String id) async {
+    DateTime timestamp = DateTime.now().toUtc();
+    String filePath = 'uploads/${id}_$timestamp.mp4';
     _ref.child(filePath).putFile(file);
-    return filePath;
+    return [filePath, timestamp];
   }
 }
 

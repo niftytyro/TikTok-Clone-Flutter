@@ -5,8 +5,9 @@ import 'package:tiktok_clone/Utils/FireDB.dart';
 class FireAuth {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  String docID;
 
-  Future<User> signIn() async {
+  Future<void> signIn() async {
     final GoogleSignInAccount _account = await _googleSignIn.signIn();
     final GoogleSignInAuthentication _googleAuth =
         await _account.authentication;
@@ -15,17 +16,21 @@ class FireAuth {
         idToken: _googleAuth.idToken, accessToken: _googleAuth.accessToken);
 
     final User user = (await _auth.signInWithCredential(_credentials)).user;
-    fireDB.addUser(username: user.displayName, email: user.email);
-    return user;
+    docID = await fireDB.addUser(username: user.displayName, email: user.email);
   }
 
   void signOut() async {
     await _googleSignIn.signOut();
     await _auth.signOut();
+    docID = null;
   }
 
   User get getCurrentUser {
     return _auth.currentUser;
+  }
+
+  String get getDocID {
+    return docID;
   }
 
   bool get isSignedIn {

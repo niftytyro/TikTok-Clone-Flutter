@@ -10,6 +10,8 @@ class CreateOverlay extends StatefulWidget {
   final Function stopRecording;
   final Function clearRecording;
   final Function saveRecording;
+  final Function setTempVideoFile;
+  final Function pauseVideoPlayer;
   final bool isRecorded;
   final File videoFile;
 
@@ -20,6 +22,8 @@ class CreateOverlay extends StatefulWidget {
     this.stopRecording,
     this.clearRecording,
     this.saveRecording,
+    this.setTempVideoFile,
+    this.pauseVideoPlayer,
     this.isRecorded,
     this.videoFile,
   });
@@ -41,6 +45,9 @@ class _CreateOverlayState extends State<CreateOverlay> {
             : OverlayTop(
                 toggleCamera: widget.toggleCamera,
                 videoFile: widget.videoFile,
+                setTempVideoFile: widget.setTempVideoFile,
+                clearRecorded: widget.clearRecording,
+                pauseVideoPlayer: widget.pauseVideoPlayer,
               ),
         OverlayBottom(
           pickFromGallery: widget.pickFromGallery,
@@ -62,12 +69,8 @@ class _CreateOverlayState extends State<CreateOverlay> {
             });
             widget.stopRecording();
           },
-          clearRecorded: () {
-            widget.clearRecording();
-          },
-          saveRecorded: () {
-            widget.saveRecording();
-          },
+          clearRecorded: widget.clearRecording,
+          saveRecorded: widget.saveRecording,
           isRecording: _isRecording,
           isRecorded: widget.isRecorded,
         ),
@@ -121,10 +124,16 @@ class OverlayTop extends StatelessWidget {
   const OverlayTop({
     Key key,
     @required this.toggleCamera,
+    this.setTempVideoFile,
     this.videoFile,
+    this.clearRecorded,
+    this.pauseVideoPlayer,
   }) : super(key: key);
 
   final Function toggleCamera;
+  final Function setTempVideoFile;
+  final Function clearRecorded;
+  final Function pauseVideoPlayer;
   final File videoFile;
 
   @override
@@ -139,13 +148,20 @@ class OverlayTop extends StatelessWidget {
             size: 30.0,
           ),
           onPressed: () {
+            clearRecorded();
             Navigator.pop(context);
           },
         ),
         GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => AddSounds()));
+          onTap: () async {
+            pauseVideoPlayer();
+            File newFile = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddSounds(tempFile: videoFile),
+              ),
+            );
+            setTempVideoFile(newFile);
           },
           child: Row(
             children: [

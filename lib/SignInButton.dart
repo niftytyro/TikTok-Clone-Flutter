@@ -11,7 +11,7 @@ class SignInButton extends StatelessWidget {
     return FlatButton(
         padding: EdgeInsets.only(left: 0.05 * constraints.maxWidth),
         height: 0.1 * constraints.maxHeight,
-        color: Colors.pink[400],
+        color: Theme.of(context).accentColor,
         onPressed: () {
           auth.signIn();
           Navigator.pop(context);

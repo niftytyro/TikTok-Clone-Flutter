@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:tiktok_clone/screens/Create/Camera.dart';
 import 'package:tiktok_clone/screens/Create/CreateOverlay.dart';
 import 'package:tiktok_clone/screens/Create/VideoPreview.dart';
+import 'package:tiktok_clone/screens/Post/Post.dart';
 import 'package:video_player/video_player.dart';
 
 class Create extends StatefulWidget {
@@ -148,6 +149,10 @@ class _CreateState extends State<Create> {
     _tempVideoFile.copySync(await _getSaveFilePath());
     _clearRecordedVideo();
     _disposeVideoPreviewController();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => Post()),
+    );
   }
 
   void _disposeVideoPreviewController() {

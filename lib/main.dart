@@ -30,7 +30,6 @@ class MyApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        // systemNavigationBarColor: Colors.transparent,
       ),
     );
     return FutureBuilder(
@@ -39,8 +38,10 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: 'TokTok',
           theme: ThemeData(
-            primarySwatch: Colors.blue,
+            primaryColor: Colors.white,
+            accentColor: Colors.pink[400],
             visualDensity: VisualDensity.adaptivePlatformDensity,
+            fontFamily: 'Roboto',
           ),
           routes: {
             Home.pathName: (context) => Home(),

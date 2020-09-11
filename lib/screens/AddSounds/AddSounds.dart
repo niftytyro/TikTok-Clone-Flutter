@@ -192,7 +192,7 @@ class _SoundsListState extends State<SoundsList> {
               children: sounds.asMap().entries.map((entry) {
                 var doc = entry.value;
                 int index = entry.key;
-                Future<String> downloadURL = fireStorage.getSoundUrl(
+                Future<String> downloadURL = fireStorage.getDownloadUrl(
                     path: "sounds/${doc.data()['name']}");
                 return SoundTile(
                     name: doc.data()['name'],

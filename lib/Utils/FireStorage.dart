@@ -10,7 +10,7 @@ class FireStorage {
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
   StorageReference _ref;
 
-  Future<String> getSoundUrl({String path}) async {
+  Future<String> getDownloadUrl({String path}) async {
     return await _ref.child(path).getDownloadURL();
   }
 

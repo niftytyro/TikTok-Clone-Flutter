@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FireDB {
+  FireDB() {
+    print('initializing FIRDBBBBBBBBBBBBBBBB--------------------------------');
+  }
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<String> addUser({String username, String email}) async {

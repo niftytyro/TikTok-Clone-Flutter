@@ -35,22 +35,28 @@ class MyApp extends StatelessWidget {
     return FutureBuilder(
       future: Firebase.initializeApp(),
       builder: (context, snapshot) {
-        return MaterialApp(
-          title: 'TokTok',
-          theme: ThemeData(
-            primaryColor: Colors.white,
-            accentColor: Colors.pink[400],
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            fontFamily: 'Roboto',
-          ),
-          routes: {
-            Home.pathName: (context) => Home(),
-            Create.pathName: (context) => Create(
-                  cameras: cameras,
-                ),
-          },
-          initialRoute: Home.pathName,
-        );
+        if (snapshot.connectionState == ConnectionState.done) {
+          return MaterialApp(
+            title: 'TokTok',
+            theme: ThemeData(
+              primaryColor: Colors.white,
+              accentColor: Colors.pink[400],
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+              fontFamily: 'Roboto',
+            ),
+            routes: {
+              Home.pathName: (context) => Home(),
+              Create.pathName: (context) => Create(
+                    cameras: cameras,
+                  ),
+            },
+            initialRoute: Home.pathName,
+          );
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
       },
     );
   }

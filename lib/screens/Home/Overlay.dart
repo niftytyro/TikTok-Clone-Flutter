@@ -71,7 +71,6 @@ class OverlayAbout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        print(constraints);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

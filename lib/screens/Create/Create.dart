@@ -146,12 +146,13 @@ class _CreateState extends State<Create> {
     setState(() {
       _isRecorded = false;
     });
-    _tempVideoFile.copySync(await _getSaveFilePath());
+    String savePath = await _getSaveFilePath();
+    _tempVideoFile.copySync(savePath);
     _clearRecordedVideo();
     _disposeVideoPreviewController();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => Post()),
+      MaterialPageRoute(builder: (context) => Post(file: File(savePath))),
     );
   }
 
@@ -213,8 +214,6 @@ class _CreateState extends State<Create> {
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
-          print('_isRecorded');
-          print(_isRecorded);
           return Container(
             child: Stack(
               children: [

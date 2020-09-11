@@ -261,7 +261,7 @@ class SoundTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  name,
+                  name.substring(0, name.lastIndexOf('.')),
                   style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.0),
                 ),
                 SizedBox(height: 5.0),

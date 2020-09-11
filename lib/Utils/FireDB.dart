@@ -21,6 +21,17 @@ class FireDB {
     return id;
   }
 
+  Future<void> addPost(
+      {String creator, String path, String description}) async {
+    DocumentReference _docRef = await _firestore.collection('uploads').add({
+      'creator': creator,
+      'path': path,
+      'description': description,
+      'likes': 0,
+    });
+    _docRef.collection('comments');
+  }
+
   Stream<QuerySnapshot> getSoundsStream() {
     return _firestore.collection('sounds').snapshots();
   }

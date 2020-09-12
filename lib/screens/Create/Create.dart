@@ -198,8 +198,8 @@ class _CreateState extends State<Create> {
         _tempVideoPath = _tempVideoFile.path;
         _isRecorded = true;
       });
-      setVideoPreviewController();
     }
+    setVideoPreviewController();
   }
 
   void _pauseVideoPlayer() {

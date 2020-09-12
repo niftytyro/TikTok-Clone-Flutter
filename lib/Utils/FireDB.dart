@@ -1,14 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tiktok_clone/Utils/FireAuth.dart';
 
 class FireDB {
-  FireDB() {
-    print('initializing FIRDBBBBBBBBBBBBBBBB--------------------------------');
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String id;
+
+  Future<void> setID() async {
+    if (auth.isSignedIn) {
+      id = (await _firestore
+              .collection('users')
+              .where('email', isEqualTo: auth.getCurrentUser.email)
+              .get())
+          .docs
+          .first
+          .id;
+    }
   }
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Future<String> addUser({String username, String email}) async {
-    String id;
+  Future<void> addUser({String username, String email}) async {
     QuerySnapshot snapshot = await _firestore
         .collection('users')
         .where('email', isEqualTo: email)
@@ -23,7 +32,6 @@ class FireDB {
     } else {
       id = snapshot.docs.first.id;
     }
-    return id;
   }
 
   Future<void> addPost(
@@ -60,4 +68,4 @@ class FireDB {
   }
 }
 
-final fireDB = FireDB();
+final fireDB = FireDB()..setID();

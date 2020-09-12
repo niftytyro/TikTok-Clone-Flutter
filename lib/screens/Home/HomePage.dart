@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _pageIndex = index;
       if (auth.isSignedIn) {
-        if (_videos[_pageIndex].data()['likedBy'].contains(auth.getDocID))
+        if (_videos[_pageIndex].data()['likedBy'].contains(fireDB.id))
           _liked = false;
       }
     });
@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
                           .data()
                           .update('likes', (value) => value - 1);
                       _videos[_pageIndex].data().update(
-                          'likedBy', (value) => value.remove(auth.getDocID));
+                          'likedBy', (value) => value.remove(fireDB.id));
                       setState(() {
                         _liked = true;
                       });
@@ -81,8 +81,9 @@ class _HomePageState extends State<HomePage> {
                       _videos[_pageIndex]
                           .data()
                           .update('likes', (value) => value + 1);
-                      _videos[_pageIndex].data().update(
-                          'likedBy', (value) => value.add(auth.getDocID));
+                      _videos[_pageIndex]
+                          .data()
+                          .update('likedBy', (value) => value.add(fireDB.id));
                       setState(() {
                         _liked = true;
                       });

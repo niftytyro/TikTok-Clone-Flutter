@@ -86,15 +86,15 @@ class _PostState extends State<Post> {
                       child: FlatButton(
                         height: 50.0,
                         onPressed: () async {
-                          if (auth.getDocID != null) {
+                          if (fireDB.id != null) {
                             setState(() {
                               isUploading = true;
                             });
                             List path_timestamp = await fireStorage.uploadFile(
-                                widget.file, auth.getDocID);
+                                widget.file, fireDB.id);
 
                             fireDB.addPost(
-                              creator: auth.getDocID,
+                              creator: fireDB.id,
                               path: path_timestamp.first,
                               description: _textEditingController.value.text,
                               timestamp: path_timestamp.last,

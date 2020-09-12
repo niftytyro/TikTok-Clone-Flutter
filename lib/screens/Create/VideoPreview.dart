@@ -14,7 +14,7 @@ class VideoPreview extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           controller.play();
           controller.setLooping(true);
-          return VideoPlayer(controller);
+          return Center(child: VideoPlayer(controller));
         } else {
           return Center(child: CircularProgressIndicator());
         }

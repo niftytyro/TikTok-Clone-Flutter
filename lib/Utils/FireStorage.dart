@@ -23,7 +23,8 @@ class FireStorage {
   Future<List> uploadFile(File file, String id) async {
     DateTime timestamp = DateTime.now().toUtc();
     String filePath = 'uploads/${id}_$timestamp.mp4';
-    _ref.child(filePath).putFile(file);
+    StorageUploadTask _uploadTask = _ref.child(filePath).putFile(file);
+    await _uploadTask.onComplete;
     return [filePath, timestamp];
   }
 }

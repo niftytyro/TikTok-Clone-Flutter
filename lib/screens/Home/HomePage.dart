@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
+import 'package:tiktok_clone/main.dart';
+import 'package:tiktok_clone/screens/Home/Overlay.dart';
 import 'package:tiktok_clone/Utils/FireAuth.dart';
 import 'package:tiktok_clone/Utils/FireDB.dart';
 import 'package:tiktok_clone/Utils/FireStorage.dart';
-import 'package:tiktok_clone/screens/Home/Overlay.dart';
-import 'package:video_player/video_player.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({
@@ -31,7 +32,10 @@ class _HomePageState extends State<HomePage> {
   void _setIndex(int index) {
     setState(() {
       _pageIndex = index;
-      if (_videos[_pageIndex].data()['']) _liked = false;
+      if (auth.isSignedIn) {
+        if (_videos[_pageIndex].data()['likedBy'].contains(auth.getDocID))
+          _liked = false;
+      }
     });
   }
 
@@ -63,25 +67,28 @@ class _HomePageState extends State<HomePage> {
                 likes: _videos[_pageIndex].data()['likes'],
                 liked: _liked,
                 addLike: () {
-                  if (_liked) {
-                    _videos[_pageIndex]
-                        .data()
-                        .update('likes', (value) => value - 1);
-                    _videos[_pageIndex].data().update(
-                        'likedBy', (value) => value.remove(auth.getDocID));
-                    setState(() {
-                      _liked = true;
-                    });
+                  if (auth.isSignedIn) {
+                    if (_liked) {
+                      _videos[_pageIndex]
+                          .data()
+                          .update('likes', (value) => value - 1);
+                      _videos[_pageIndex].data().update(
+                          'likedBy', (value) => value.remove(auth.getDocID));
+                      setState(() {
+                        _liked = true;
+                      });
+                    } else {
+                      _videos[_pageIndex]
+                          .data()
+                          .update('likes', (value) => value + 1);
+                      _videos[_pageIndex].data().update(
+                          'likedBy', (value) => value.add(auth.getDocID));
+                      setState(() {
+                        _liked = true;
+                      });
+                    }
                   } else {
-                    _videos[_pageIndex]
-                        .data()
-                        .update('likes', (value) => value + 1);
-                    _videos[_pageIndex]
-                        .data()
-                        .update('likedBy', (value) => value.add(auth.getDocID));
-                    setState(() {
-                      _liked = true;
-                    });
+                    showSignInModalSheet(context);
                   }
                 },
               ),
@@ -152,7 +159,8 @@ class _TikToksViewState extends State<TikToksView> {
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       widget.startPlaying();
-                      return VideoPlayer(widget.videoPlayerController);
+                      return Center(
+                          child: VideoPlayer(widget.videoPlayerController));
                     } else {
                       return Container();
                     }

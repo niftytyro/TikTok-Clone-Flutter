@@ -104,7 +104,11 @@ class _HomeState extends State<Home> {
   }
 
   void _stopPlaying() {
-    _videoPlayerController.pause();
+    try {
+      _videoPlayerController.pause();
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:tiktok_clone/Utils/FireAuth.dart';
 import 'package:tiktok_clone/Utils/FireDB.dart';
 import 'package:tiktok_clone/Utils/FireStorage.dart';
+import 'package:tiktok_clone/main.dart';
 
 class Post extends StatefulWidget {
   Post({
@@ -78,14 +79,15 @@ class _PostState extends State<Post> {
                     List path_timestamp = await fireStorage.uploadFile(
                         widget.file, auth.getDocID);
                     print(_textEditingController.value.text);
-
-                    fireDB.addPost(
-                      creator: auth.getDocID,
-                      path: path_timestamp.first,
-                      description: _textEditingController.value.text,
-                      timestamp: path_timestamp.last,
-                    );
-                    Navigator.pop(context);
+                    if (auth.isSignedIn) {
+                      fireDB.addPost(
+                        creator: auth.getDocID,
+                        path: path_timestamp.first,
+                        description: _textEditingController.value.text,
+                        timestamp: path_timestamp.last,
+                      );
+                    }
+                    Navigator.pushReplacementNamed(context, Home.pathName);
                   },
                   color: Theme.of(context).accentColor,
                   child: Text(

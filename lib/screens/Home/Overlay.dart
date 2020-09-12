@@ -3,6 +3,20 @@ import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class VideosOverlay extends StatelessWidget {
+  VideosOverlay({
+    this.description = '',
+    this.username,
+    this.likes = 0,
+    this.addLike,
+    this.liked,
+  });
+
+  final String description;
+  final Future<String> username;
+  final int likes;
+  final bool liked;
+  final Function addLike;
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
@@ -18,11 +32,15 @@ class VideosOverlay extends StatelessWidget {
                 ConstrainedBox(
                   constraints:
                       BoxConstraints(maxWidth: 0.8 * constraints.maxWidth),
-                  child: OverlayAbout(
-                    accountID: 'akearney21',
-                    caption: 'lorem ipsum about the video blah blah blah...',
-                    songTitle:
-                        'This song is sooooooooooooooooooooooooooo sooooooooooooooooooooooooooo loooooooooooong.',
+                  child: FutureBuilder(
+                    builder: (context, snapshot) {
+                      return OverlayAbout(
+                        username: snapshot.data,
+                        caption: description,
+                      );
+                    },
+                    future: username,
+                    initialData: '',
                   ),
                 ),
                 Column(
@@ -33,10 +51,21 @@ class VideosOverlay extends StatelessWidget {
                       size: 45.0,
                     ),
                     SizedBox(height: 20.0),
-                    Icon(
-                      Icons.favorite,
-                      color: Colors.white,
-                      size: 45.0,
+                    GestureDetector(
+                      onTap: addLike,
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.favorite,
+                            color: liked ? Colors.red : Colors.white,
+                            size: 45.0,
+                          ),
+                          Text(
+                            '$likes',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
                     ),
                     SizedBox(height: 15.0),
                     Icon(
@@ -58,14 +87,12 @@ class VideosOverlay extends StatelessWidget {
 
 class OverlayAbout extends StatelessWidget {
   OverlayAbout({
-    @required this.accountID,
+    @required this.username,
     @required this.caption,
-    @required this.songTitle,
   });
 
-  final String accountID;
+  final String username;
   final String caption;
-  final String songTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +102,7 @@ class OverlayAbout extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '@$accountID',
+              '$username',
               style:
                   TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
             ),

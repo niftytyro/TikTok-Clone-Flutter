@@ -11,7 +11,13 @@ class FireStorage {
   StorageReference _ref;
 
   Future<String> getDownloadUrl({String path}) async {
-    return await _ref.child(path).getDownloadURL();
+    String url = '';
+    try {
+      url = await _ref.child(path).getDownloadURL();
+    } catch (e) {
+      print(e);
+    }
+    return url;
   }
 
   Future<List> uploadFile(File file, String id) async {

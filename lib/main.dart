@@ -8,6 +8,7 @@ import 'package:tiktok_clone/screens/Create/Create.dart';
 import 'package:tiktok_clone/screens/Home/HomePage.dart';
 import 'package:tiktok_clone/screens/Home/Profile.dart';
 import 'package:tiktok_clone/Utils/FireAuth.dart';
+import 'package:video_player/video_player.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -73,6 +74,38 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _index = 0;
+  VideoPlayerController _videoPlayerController;
+  Future _initVideoPlayerController;
+
+  @override
+  void dispose() {
+    _disposeVideoPlayerController();
+    super.dispose();
+  }
+
+  void _disposeVideoPlayerController() {
+    try {
+      _videoPlayerController.dispose();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  VideoPlayerController _setVideoPlayerController(String url) {
+    _disposeVideoPlayerController();
+    _videoPlayerController = VideoPlayerController.network(url);
+
+    return _videoPlayerController;
+  }
+
+  void _startPlaying() {
+    _videoPlayerController.play();
+    _videoPlayerController.setLooping(false);
+  }
+
+  void _stopPlaying() {
+    _videoPlayerController.pause();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,18 +118,30 @@ class _HomeState extends State<Home> {
             setState(() {
               _index = newIndex;
             });
+            if (_index != 0) {
+              _stopPlaying();
+            } else {
+              _startPlaying();
+            }
             if (_index == 1) {
               setState(() {
                 _index = 0;
               });
-              Navigator.pushNamed(context, Create.pathName);
+              Navigator.pushReplacementNamed(context, Create.pathName);
             } else if (_index == 2 && !auth.isSignedIn) {
               showSignInModalSheet(context);
             }
           }
         },
       ),
-      body: _index == 0 ? HomePage() : Profile(),
+      body: _index == 0
+          ? HomePage(
+              videoPlayerController: _videoPlayerController,
+              initVideoPlayerController: _initVideoPlayerController,
+              setVideoPlayerController: _setVideoPlayerController,
+              startPlaying: _startPlaying,
+            )
+          : Profile(),
     );
   }
 }

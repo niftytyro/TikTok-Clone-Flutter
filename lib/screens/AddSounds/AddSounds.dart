@@ -71,7 +71,7 @@ class _AddSoundsState extends State<AddSounds> {
           now.second.toString();
       String _newFilePath = '$dirPath/$filename.mp4';
       String url = await downloadURL;
-      int rc = await _fFmpeg.executeWithArguments([
+      await _fFmpeg.executeWithArguments([
         '-i',
         widget.tempFile.path,
         '-i',
@@ -83,7 +83,6 @@ class _AddSoundsState extends State<AddSounds> {
         '-shortest',
         _newFilePath
       ]);
-      print('FFMPEG EXITED WITHHHHHH RC :::::: $rc');
       _newFile = File(_newFilePath);
       _popScreen();
     }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -30,6 +31,7 @@ class _CreateState extends State<Create> {
   File _tempVideoFile;
   String _tempVideoPath;
   bool _isRecorded = false;
+  FlutterFFmpeg _fFmpeg;
 
   @override
   void initState() {
@@ -38,6 +40,7 @@ class _CreateState extends State<Create> {
     _initCamera(widget.cameras.firstWhere((description) =>
         description.lensDirection == CameraLensDirection.back));
     _imagePicker = ImagePicker();
+    _fFmpeg = FlutterFFmpeg();
   }
 
   @override
@@ -124,6 +127,29 @@ class _CreateState extends State<Create> {
     }
     try {
       await _cameraController.stopVideoRecording();
+      final extDir = await getExternalStorageDirectory();
+      final String dirPath = '${extDir.path}';
+      await Directory(dirPath).create(recursive: true);
+      DateTime now = DateTime.now();
+      String filename = now.day.toString() +
+          '.' +
+          now.hour.toString() +
+          '.' +
+          now.minute.toString() +
+          '.' +
+          now.second.toString();
+      String _newVideoPath = '$dirPath/$filename.mp4';
+      await _fFmpeg.executeWithArguments([
+        '-i',
+        _tempVideoPath,
+        '-vcodec',
+        'libx265',
+        '-crf',
+        '28',
+        _newVideoPath,
+      ]);
+      File(_tempVideoPath).deleteSync();
+      _tempVideoPath = _newVideoPath;
       _tempVideoFile = File(_tempVideoPath);
     } catch (e) {
       print(e);

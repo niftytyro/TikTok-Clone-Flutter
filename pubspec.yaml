@@ -37,6 +37,7 @@ dependencies:
   path_provider: ^1.6.14
   path: ^1.7.0
   video_player: ^0.10.12+2
+  flutter_vlc_player: ^3.0.7
   audioplayers: ^0.16.1
   image_picker: ^0.6.7+7
   permission_handler: ^5.0.1+1

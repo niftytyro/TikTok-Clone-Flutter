@@ -15,8 +15,9 @@ class FireDB {
         .get();
     if (snapshot.size == 0) {
       id = (await _firestore.collection('users').add({
-        'username': username,
+        'name': username,
         'email': email,
+        'username': '@' + email.substring(0, email.lastIndexOf('@')),
       }))
           .id;
     } else {
@@ -49,6 +50,16 @@ class FireDB {
         .collection('uploads')
         .orderBy('timestamp', descending: true)
         .snapshots();
+  }
+
+  Future<String> getUsername(String id) async {
+    DocumentSnapshot snapshot =
+        await _firestore.collection('users').doc(id).get();
+    return snapshot.data()['username'];
+  }
+
+  Future<void> addLike(String id, int newLikes) async {
+    await _firestore.collection('uploads').doc(id).update({'likes': newLikes});
   }
 }
 

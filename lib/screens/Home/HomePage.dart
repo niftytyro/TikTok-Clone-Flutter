@@ -6,17 +6,31 @@ import 'package:tiktok_clone/screens/Home/Overlay.dart';
 import 'package:video_player/video_player.dart';
 
 class HomePage extends StatefulWidget {
+  HomePage({
+    this.videoPlayerController,
+    this.initVideoPlayerController,
+    this.setVideoPlayerController,
+    this.startPlaying,
+  });
+
+  final VideoPlayerController videoPlayerController;
+  final Future initVideoPlayerController;
+  final Function setVideoPlayerController;
+  final Function startPlaying;
+
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   List _videos;
-  int _pageIndex;
+  int _pageIndex = 0;
+  bool _liked = false;
 
   void _setIndex(int index) {
     setState(() {
       _pageIndex = index;
+      _liked = false;
     });
   }
 
@@ -36,8 +50,25 @@ class _HomePageState extends State<HomePage> {
                 videos: _videos.map((documentSnapshot) {
                   return documentSnapshot.data()['path'];
                 }).toList(),
+                videoPlayerController: widget.videoPlayerController,
+                setVideoPlayerController: widget.setVideoPlayerController,
+                startPlaying: widget.startPlaying,
+                initVideoPlayerController: widget.initVideoPlayerController,
               ),
-              VideosOverlay(),
+              VideosOverlay(
+                username:
+                    fireDB.getUsername(_videos[_pageIndex].data()['creator']),
+                description: _videos[_pageIndex].data()['description'],
+                likes: _videos[_pageIndex].data()['likes'],
+                liked: _liked,
+                addLike: () {
+                  fireDB.addLike(_videos[_pageIndex].id,
+                      _videos[_pageIndex].data()['likes'] + 1);
+                  setState(() {
+                    _liked = true;
+                  });
+                },
+              ),
             ],
           );
         } else {
@@ -50,10 +81,21 @@ class _HomePageState extends State<HomePage> {
 }
 
 class TikToksView extends StatefulWidget {
-  TikToksView({this.setIndex, this.videos});
+  TikToksView({
+    this.setIndex,
+    this.videos,
+    this.initVideoPlayerController,
+    this.videoPlayerController,
+    this.setVideoPlayerController,
+    this.startPlaying,
+  });
 
   final Function setIndex;
   final List videos;
+  VideoPlayerController videoPlayerController;
+  Future initVideoPlayerController;
+  final Function setVideoPlayerController;
+  final Function startPlaying;
 
   @override
   _TikToksViewState createState() => _TikToksViewState();
@@ -61,8 +103,6 @@ class TikToksView extends StatefulWidget {
 
 class _TikToksViewState extends State<TikToksView> {
   PageController _pageController;
-  VideoPlayerController _videoPlayerController;
-  Future initVideoPlayerController;
 
   @override
   void initState() {
@@ -78,43 +118,41 @@ class _TikToksViewState extends State<TikToksView> {
 
   @override
   Widget build(BuildContext context) {
-    return PageView.builder(
-      scrollDirection: Axis.vertical,
-      onPageChanged: widget.setIndex,
-      itemCount: widget.videos.length,
-      itemBuilder: (context, index) {
-        return FutureBuilder(
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              try {
-                _videoPlayerController.dispose();
-              } catch (e) {
-                print(e);
+    return GestureDetector(
+      onTap: widget.startPlaying,
+      child: PageView.builder(
+        scrollDirection: Axis.vertical,
+        onPageChanged: widget.setIndex,
+        itemCount: widget.videos.length,
+        itemBuilder: (context, index) {
+          return FutureBuilder(
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                widget.videoPlayerController =
+                    widget.setVideoPlayerController(snapshot.data);
+                widget.initVideoPlayerController =
+                    widget.videoPlayerController.initialize();
+                return FutureBuilder(
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      widget.startPlaying();
+                      return VideoPlayer(widget.videoPlayerController);
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                  future: widget.initVideoPlayerController,
+                );
+              } else {
+                return Center(child: CircularProgressIndicator());
               }
-              _videoPlayerController =
-                  VideoPlayerController.network(snapshot.data);
-              initVideoPlayerController = _videoPlayerController.initialize();
-              return FutureBuilder(
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    _videoPlayerController.play();
-                    _videoPlayerController.setLooping(true);
-                    return VideoPlayer(_videoPlayerController);
-                  } else {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                },
-                future: initVideoPlayerController,
-              );
-            } else {
-              return Container(child: CircularProgressIndicator());
-            }
-          },
-          future: fireStorage.getDownloadUrl(path: widget.videos[index]),
-        );
-      },
+            },
+            future: fireStorage.getDownloadUrl(path: widget.videos[index]),
+          );
+        },
+      ),
     );
   }
 }

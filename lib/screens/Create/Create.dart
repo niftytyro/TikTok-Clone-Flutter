@@ -31,7 +31,6 @@ class _CreateState extends State<Create> {
   File _tempVideoFile;
   String _tempVideoPath;
   bool _isRecorded = false;
-  FlutterFFmpeg _fFmpeg;
 
   @override
   void initState() {
@@ -40,7 +39,6 @@ class _CreateState extends State<Create> {
     _initCamera(widget.cameras.firstWhere((description) =>
         description.lensDirection == CameraLensDirection.back));
     _imagePicker = ImagePicker();
-    _fFmpeg = FlutterFFmpeg();
   }
 
   @override
@@ -127,29 +125,6 @@ class _CreateState extends State<Create> {
     }
     try {
       await _cameraController.stopVideoRecording();
-      final extDir = await getExternalStorageDirectory();
-      final String dirPath = '${extDir.path}';
-      await Directory(dirPath).create(recursive: true);
-      DateTime now = DateTime.now();
-      String filename = now.day.toString() +
-          '.' +
-          now.hour.toString() +
-          '.' +
-          now.minute.toString() +
-          '.' +
-          now.second.toString();
-      String _newVideoPath = '$dirPath/$filename.mp4';
-      await _fFmpeg.executeWithArguments([
-        '-i',
-        _tempVideoPath,
-        '-vcodec',
-        'libx265',
-        '-crf',
-        '28',
-        _newVideoPath,
-      ]);
-      File(_tempVideoPath).deleteSync();
-      _tempVideoPath = _newVideoPath;
       _tempVideoFile = File(_tempVideoPath);
     } catch (e) {
       print(e);
@@ -164,8 +139,8 @@ class _CreateState extends State<Create> {
     setState(() {
       _isRecorded = false;
     });
-    _tempVideoFile.deleteSync(recursive: true);
     _disposeVideoPreviewController();
+    _tempVideoFile.deleteSync(recursive: true);
   }
 
   void _saveRecordedVideo() async {
@@ -175,7 +150,6 @@ class _CreateState extends State<Create> {
     String savePath = await _getSaveFilePath();
     _tempVideoFile.copySync(savePath);
     _clearRecordedVideo();
-    _disposeVideoPreviewController();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => Post(file: File(savePath))),
@@ -185,6 +159,7 @@ class _CreateState extends State<Create> {
   void _disposeVideoPreviewController() {
     try {
       setState(() {
+        _isRecorded = false;
         _videoPlayerController.dispose();
         _videoPlayerController = null;
       });

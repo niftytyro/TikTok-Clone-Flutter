@@ -37,6 +37,7 @@ class FireDB {
       'description': description,
       'likes': 0,
       'timestamp': timestamp,
+      'likedBy': [],
     });
     _docRef.collection('comments');
   }
@@ -56,10 +57,6 @@ class FireDB {
     DocumentSnapshot snapshot =
         await _firestore.collection('users').doc(id).get();
     return snapshot.data()['username'];
-  }
-
-  Future<void> addLike(String id, int newLikes) async {
-    await _firestore.collection('uploads').doc(id).update({'likes': newLikes});
   }
 }
 

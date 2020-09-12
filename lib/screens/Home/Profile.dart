@@ -5,11 +5,13 @@ class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: FlatButton(
-        child: Text('Signout'),
-        onPressed: () {
-          auth.signOut();
-        },
+      child: Center(
+        child: FlatButton(
+          child: Text('Signout'),
+          onPressed: () {
+            auth.signOut();
+          },
+        ),
       ),
     );
   }

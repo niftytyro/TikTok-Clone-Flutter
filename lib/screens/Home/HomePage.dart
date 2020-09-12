@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tiktok_clone/Utils/FireAuth.dart';
 import 'package:tiktok_clone/Utils/FireDB.dart';
 import 'package:tiktok_clone/Utils/FireStorage.dart';
 import 'package:tiktok_clone/screens/Home/Overlay.dart';
@@ -23,14 +24,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List _videos;
+  List<QueryDocumentSnapshot> _videos;
   int _pageIndex = 0;
   bool _liked = false;
 
   void _setIndex(int index) {
     setState(() {
       _pageIndex = index;
-      _liked = false;
+      if (_videos[_pageIndex].data()['']) _liked = false;
     });
   }
 
@@ -62,11 +63,26 @@ class _HomePageState extends State<HomePage> {
                 likes: _videos[_pageIndex].data()['likes'],
                 liked: _liked,
                 addLike: () {
-                  fireDB.addLike(_videos[_pageIndex].id,
-                      _videos[_pageIndex].data()['likes'] + 1);
-                  setState(() {
-                    _liked = true;
-                  });
+                  if (_liked) {
+                    _videos[_pageIndex]
+                        .data()
+                        .update('likes', (value) => value - 1);
+                    _videos[_pageIndex].data().update(
+                        'likedBy', (value) => value.remove(auth.getDocID));
+                    setState(() {
+                      _liked = true;
+                    });
+                  } else {
+                    _videos[_pageIndex]
+                        .data()
+                        .update('likes', (value) => value + 1);
+                    _videos[_pageIndex]
+                        .data()
+                        .update('likedBy', (value) => value.add(auth.getDocID));
+                    setState(() {
+                      _liked = true;
+                    });
+                  }
                 },
               ),
             ],
@@ -138,9 +154,7 @@ class _TikToksViewState extends State<TikToksView> {
                       widget.startPlaying();
                       return VideoPlayer(widget.videoPlayerController);
                     } else {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return Container();
                     }
                   },
                   future: widget.initVideoPlayerController,

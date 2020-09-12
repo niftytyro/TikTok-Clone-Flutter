@@ -177,50 +177,58 @@ class SoundsList extends StatefulWidget {
 class _SoundsListState extends State<SoundsList> {
   List sounds = [];
   int playing = -1;
+  bool _isEditing = false;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: StreamBuilder<QuerySnapshot>(
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
-          } else {
-            sounds = snapshot.data.docs;
-            return ListView(
-              children: sounds.asMap().entries.map((entry) {
-                var doc = entry.value;
-                int index = entry.key;
-                Future<String> downloadURL = fireStorage.getDownloadUrl(
-                    path: "sounds/${doc.data()['name']}");
-                return SoundTile(
-                    name: doc.data()['name'],
-                    creator: doc.data()['creator'],
-                    isPlaying: playing == index,
-                    onPlay: () {
-                      if (playing == index) {
-                        widget.stopSound();
-                      } else {
-                        widget.playSound(downloadURL);
-                      }
-                      setState(() {
-                        if (playing == index) {
-                          playing = -1;
-                        } else {
-                          playing = index;
-                        }
-                      });
-                    },
-                    onSelect: () async {
-                      widget.replaceSound(downloadURL: downloadURL);
-                    });
-              }).toList(),
-            );
-          }
-        },
-        stream: fireDB.getSoundsStream(),
-      ),
-    );
+    return _isEditing
+        ? Center(
+            child: CircularProgressIndicator(),
+          )
+        : Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(child: CircularProgressIndicator());
+                } else {
+                  sounds = snapshot.data.docs;
+                  return ListView(
+                    children: sounds.asMap().entries.map((entry) {
+                      var doc = entry.value;
+                      int index = entry.key;
+                      Future<String> downloadURL = fireStorage.getDownloadUrl(
+                          path: "sounds/${doc.data()['name']}");
+                      return SoundTile(
+                          name: doc.data()['name'],
+                          creator: doc.data()['creator'],
+                          isPlaying: playing == index,
+                          onPlay: () {
+                            if (playing == index) {
+                              widget.stopSound();
+                            } else {
+                              widget.playSound(downloadURL);
+                            }
+                            setState(() {
+                              if (playing == index) {
+                                playing = -1;
+                              } else {
+                                playing = index;
+                              }
+                            });
+                          },
+                          onSelect: () async {
+                            setState(() {
+                              _isEditing = true;
+                            });
+                            widget.replaceSound(downloadURL: downloadURL);
+                          });
+                    }).toList(),
+                  );
+                }
+              },
+              stream: fireDB.getSoundsStream(),
+            ),
+          );
   }
 }
 
